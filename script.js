@@ -92,6 +92,25 @@ document.addEventListener('DOMContentLoaded', function() {
         minZoom: 14
     }).addTo(map);
 
+    // Aggiungi indicatore di posizione GPS
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            var userLat = position.coords.latitude;
+            var userLng = position.coords.longitude;
+            
+            // Aggiungi marker posizione utente
+            L.marker([userLat, userLng], {
+                icon: L.divIcon({
+                    className: 'user-location',
+                    html: '<div class="pulse"></div>',
+                    iconSize: [20, 20]
+                })
+            }).addTo(map).bindPopup("La tua posizione");
+        }, function(error) {
+            console.log("Geolocalizzazione non disponibile o rifiutata");
+        });
+    }
+
     // Carica il file GeoJSON dal link RAW di GitHub
     fetch('https://raw.githubusercontent.com/ChatHeritage/Sestiere_di_Dorsoduro/main/Tracciato_openroute_Sestiere_Dorsoduro.geojson') // URL del file GeoJSON
         .then(response => response.json())
@@ -207,26 +226,43 @@ document.addEventListener('DOMContentLoaded', function() {
         audio.play();
     });
 
+    //window.addEventListener('load', function() {
+        //lastClickedMarker = markers[0]; // Imposta marker 1 come selezionato
+        //markers[0].setIcon(selectedIcon); // Cambia l'icona del marker 1
+        //$('#slide-1').addClass('active'); // Imposta slide-1 come attiva, rimuovendo l'effetto maschera
+    //});
+
     window.addEventListener('load', function() {
-        lastClickedMarker = markers[0]; // Imposta marker 1 come selezionato
-        markers[0].setIcon(selectedIcon); // Cambia l'icona del marker 1
-        $('#slide-1').addClass('active'); // Imposta slide-1 come attiva, rimuovendo l'effetto maschera
+        lastClickedMarker = markers[0];
+        markers[0].setIcon(selectedIcon);
+        setTimeout(function() {
+            $('#slide-1').addClass('active');
+        }, 100);
     });
 
     ///////////////////////////////// GESTIONE GENERALE ANIMAZIONE DI SCORRIMENTO ///////////////////////////////////////////////////
     function clickMarker(markerIndex) {
         var newMarkerIndex = (markerIndex + markers.length) % markers.length;
         var marker = markers[newMarkerIndex];
+
+        if (lastClickedMarker === marker) return;
+
         if (lastClickedMarker && lastClickedMarker !== marker) {
             lastClickedMarker.setIcon(defaultIcon);
         }
-        if (marker) {
-            marker.setIcon(selectedIcon);
-            marker.fire('click');
-            lastClickedMarker = marker;
-        } else {
-            console.error('Marker non trovato.');
-        }
+
+        marker.setIcon(selectedIcon);
+        lastClickedMarker = marker;
+
+        // Assicurati che TUTTE le slide perdano la classe active
+        $('.slide-btn').each(function() {
+            $(this).removeClass('active');
+        });
+
+        // Aggiungi un piccolo delay per garantire la transizione
+        setTimeout(function() {
+            $('#slide-' + (markerIndex + 1)).addClass('active');
+        }, 50);
     }
 
     function addSlideClickEvent(slideNumber, markerIndex) {
@@ -347,7 +383,15 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         ]
     }).on('afterChange', function(event, slick, currentSlide) {
-        // Chiama la funzione ottimizzata clickMarker
+        // Prima rimuovi TUTTE le classi active
+        $('.slide-btn').removeClass('active');
+        
+        // Poi aggiungi active solo alla slide corrente
+        setTimeout(function() {
+            $('#slide-' + (currentSlide + 1)).addClass('active');
+        }, 50);
+        
+        // Chiama la funzione clickMarker
         clickMarker(currentSlide);
     });
 });
