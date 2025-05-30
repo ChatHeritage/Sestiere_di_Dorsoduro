@@ -45,7 +45,9 @@
       "risposta7C": "Distanza: 130 m",
       "risposta7D": "Tempo: 1 min",
       "ctotitolo1": "Unisciti a noi ed esplora il percorso!",
-      "ctobutton": "Let's go!"
+      "ctobutton": "Let's go!",
+      "footer_disclaimer": "Sito web utilizzato per testare nuove funzionalità, design o contenuti",
+      "footer_rights": "Tutti i diritti riservati"
     },
     "en": {
       "titolo": "Dorsoduro District",
@@ -93,6 +95,8 @@
       "risposta7C": "Distance: 130 m",
       "risposta7D": "Time: 1 min",
       "ctotitolo1": "Join us and explore the route!",
-      "ctobutton": "Let's go!"
+      "ctobutton": "Let's go!",
+      "footer_disclaimer": "Website used to test new features, design or contents",
+      "footer_rights": "All rights reserved"
     }
 }
